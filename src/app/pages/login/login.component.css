@@ -1,15 +1,67 @@
-.container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
+/* Fondo global (por si no se carga desde styles.css) */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Tarjeta de login */
+.login-card {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 400px;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Título */
+.login-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #1f4037;
+  font-weight: bold;
+}
+
+/* Botón de login */
+.btn-login {
+  width: 100%;
+}
+
+/* Links */
+.login-links {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center; /* <- cambia esto */
+  flex-wrap: wrap; /* opcional para evitar desbordes en pantallas pequeñas */
+  gap: 0.5rem; /* espacio entre los links */
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.login-links a {
+  color: #1f4037;
+  text-decoration: none;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  background: linear-gradient(0deg, #12352b, #3faa78);
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  h2 {
-    text-align: center;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
+}

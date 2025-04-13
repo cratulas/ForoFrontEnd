@@ -12,7 +12,7 @@ interface UsuarioSimulado {
 @Component({
   selector: 'app-recover-password',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './recover-password.component.html',
   styleUrls: ['./recover-password.component.css']
 })
@@ -20,18 +20,24 @@ export class RecoverPasswordComponent {
   email: string = '';
   message: string = '';
   isSuccess: boolean = false;
-  password: string = '';
-
-  // Usuarios predefinidos
-  usuarios: UsuarioSimulado[] = [
-    { email: 'gamer1@example.com', password: 'pass123', nombre: 'Gamer 1' },
-    { email: 'moderador1@example.com', password: 'pass456', nombre: 'Moderador' },
-    { email: 'admin1@example.com', password: 'adminpass', nombre: 'Administrador' },
-  ];
-
 
   onSubmit() {
-    const usuarioEncontrado = this.usuarios.find(u => u.email === this.email.trim());
+    this.message = '';
+    this.isSuccess = false;
+
+    if (!this.email.trim()) {
+      this.message = '❌ El campo de correo electrónico es obligatorio.';
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.message = '❌ El formato del correo electrónico no es válido.';
+      return;
+    }
+
+    const usuarios: UsuarioSimulado[] = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    const usuarioEncontrado = usuarios.find(u => u.email === this.email.trim());
 
     if (usuarioEncontrado) {
       this.isSuccess = true;

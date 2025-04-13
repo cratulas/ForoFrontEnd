@@ -1,5 +1,5 @@
 # Etapa 1: Compilar Angular con SSR
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY . .
 RUN npm run build
 
 # Etapa 2: Servir con Node.js usando el servidor SSR generado
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 

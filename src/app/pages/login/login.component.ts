@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 interface UsuarioSimulado {
   email: string;
@@ -19,13 +19,14 @@ interface UsuarioSimulado {
 export class LoginComponent {
   email: string = '';
   password: string = '';
-  
+
+  constructor(private router: Router) {} 
 
   // Usuarios predefinidos
   usuarios: UsuarioSimulado[] = [
     { email: 'gamer1@example.com', password: 'pass123', nombre: 'Gamer 1' },
     { email: 'moderador1@example.com', password: 'pass456', nombre: 'Moderador' },
-    { email: 'admin1@example.com', password: 'adminpass', nombre: 'Administrador' },
+    { email: 'admin1@example.com', password: 'adminpass', nombre: 'Administrador' }
   ];
 
   onLogin() {
@@ -36,6 +37,9 @@ export class LoginComponent {
       return;
     }
 
+    localStorage.setItem('usuarioNombre', usuario.nombre);
     alert(`Bienvenido, ${usuario.nombre}!`);
+
+    this.router.navigate(['/home']);
   }
 }

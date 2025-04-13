@@ -23,7 +23,7 @@ export class ProfileComponent {
   mensaje: string = '';
   exito: boolean = false;
 
-  // Lista de usuarios simulados
+  // Usuarios predefinidos
   usuarios: UsuarioSimulado[] = [
     { email: 'gamer1@example.com', password: 'pass123', nombre: 'Gamer 1' },
     { email: 'moderador1@example.com', password: 'pass456', nombre: 'Moderador' },

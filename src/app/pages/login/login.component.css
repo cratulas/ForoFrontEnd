@@ -1,4 +1,4 @@
-/* Fondo global (por si no se carga desde styles.css) */
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -6,7 +6,6 @@
   height: 100%;
 }
 
-/* Tarjeta de login */
 .login-card {
   background-color: white;
   padding: 2.5rem;
@@ -17,7 +16,6 @@
   animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Título */
 .login-title {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -25,18 +23,17 @@
   font-weight: bold;
 }
 
-/* Botón de login */
+
 .btn-login {
   width: 100%;
 }
 
-/* Links */
 .login-links {
   margin-top: 1rem;
   display: flex;
-  justify-content: center; /* <- cambia esto */
-  flex-wrap: wrap; /* opcional para evitar desbordes en pantallas pequeñas */
-  gap: 0.5rem; /* espacio entre los links */
+  justify-content: center; 
+  flex-wrap: wrap; 
+  gap: 0.5rem; 
   font-size: 0.9rem;
   text-align: center;
 }
@@ -54,7 +51,7 @@
   background: linear-gradient(0deg, #12352b, #3faa78);
 }
 
-/* Animación */
+
 @keyframes fadeIn {
   from {
     opacity: 0;

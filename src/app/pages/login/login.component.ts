@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 
-interface UsuarioSimulado {
+interface Usuario {
   email: string;
   password: string;
   nombre: string;
@@ -19,27 +21,61 @@ interface UsuarioSimulado {
 export class LoginComponent {
   email: string = '';
   password: string = '';
+  usuarios: Usuario[] = [];
 
-  constructor(private router: Router) {} 
+  mensaje: string = '';
+  exito: boolean = false;
 
-  // Usuarios predefinidos
-  usuarios: UsuarioSimulado[] = [
-    { email: 'gamer1@example.com', password: 'pass123', nombre: 'Gamer 1' },
-    { email: 'moderador1@example.com', password: 'pass456', nombre: 'Moderador' },
-    { email: 'admin1@example.com', password: 'adminpass', nombre: 'Administrador' }
-  ];
+  private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
+
+  constructor() {
+    this.cargarUsuarios();
+  }
+
+  cargarUsuarios() {
+    if (isPlatformBrowser(this.platformId)) {
+      const guardados = localStorage.getItem('usuarios');
+      if (guardados) {
+        this.usuarios = JSON.parse(guardados);
+      } else {
+        this.usuarios = [
+          { nombre: 'Gamer 1', email: 'gamer1@example.com', password: 'Gamer123!' },
+          { nombre: 'Moderador', email: 'moderador1@example.com', password: 'Mod456@' },
+          { nombre: 'Administrador', email: 'admin1@example.com', password: 'Admin789#' }
+        ];
+        localStorage.setItem('usuarios', JSON.stringify(this.usuarios));
+      }
+    }
+  }
 
   onLogin() {
-    const usuario = this.usuarios.find(u => u.email === this.email && u.password === this.password);
+    this.mensaje = '';
+    this.exito = false;
 
-    if (!usuario) {
-      alert('Correo o contraseña incorrectos.');
+    if (!this.email || !this.password) {
+      this.mensaje = 'Por favor, completa el correo y la contraseña.';
       return;
     }
 
-    localStorage.setItem('usuarioNombre', usuario.nombre);
-    alert(`Bienvenido, ${usuario.nombre}!`);
+    const usuario = this.usuarios.find(
+      u => u.email === this.email && u.password === this.password
+    );
 
-    this.router.navigate(['/home']);
+    if (!usuario) {
+      this.mensaje = 'Correo o contraseña incorrectos.';
+      return;
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('usuarioNombre', usuario.nombre);
+    }
+
+    this.mensaje = `Bienvenido, ${usuario.nombre}!`;
+    this.exito = true;
+
+    setTimeout(() => {
+      this.router.navigate(['/home']);
+    }, 1500);
   }
 }

@@ -1,23 +1,27 @@
-<div class="login-container">
-  <div class="login-card">
-    <h2 class="login-title">Iniciar Sesión</h2>
-    <p class="text-center text-muted">Accede a tu cuenta</p>
+<div class="container">
+  <div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+      <div class="login-card">
+        <h2 class="login-title">Iniciar Sesión</h2>
+        <p class="text-center text-muted">Accede a tu cuenta</p>
 
-    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
-      <div class="mb-3">
-        <label for="email" class="form-label">Correo electrónico</label>
-        <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" required />
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" [(ngModel)]="password" name="password" required />
-      </div>
-      <button type="submit" class="login-button w-100">Iniciar Sesión</button>
-    </form>
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+          <div class="mb-3">
+            <label for="email" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" required />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="password" [(ngModel)]="password" name="password" required />
+          </div>
+          <button type="submit" class="login-button btn w-100">Iniciar Sesión</button>
+        </form>
 
-    <div class="login-links text-center mt-3">
-      <a routerLink="/register">¿No tienes cuenta? Regístrate</a> 
-      <a routerLink="/recover">¿Olvidaste tu contraseña?</a> 
+        <div class="login-links text-center mt-3">
+          <a routerLink="/register">¿No tienes cuenta? Regístrate</a>
+          <a routerLink="/recover">¿Olvidaste tu contraseña?</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -2,14 +2,9 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
-
-interface Usuario {
-  email: string;
-  password: string;
-  nombre: string;
-}
+import { isPlatformBrowser } from '@angular/common';
+import { AuthService, Usuario } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -21,33 +16,12 @@ interface Usuario {
 export class LoginComponent {
   email: string = '';
   password: string = '';
-  usuarios: Usuario[] = [];
-
   mensaje: string = '';
   exito: boolean = false;
 
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
-
-  constructor() {
-    this.cargarUsuarios();
-  }
-
-  cargarUsuarios() {
-    if (isPlatformBrowser(this.platformId)) {
-      const guardados = localStorage.getItem('usuarios');
-      if (guardados) {
-        this.usuarios = JSON.parse(guardados);
-      } else {
-        this.usuarios = [
-          { nombre: 'Gamer 1', email: 'gamer1@example.com', password: 'Gamer123!' },
-          { nombre: 'Moderador', email: 'moderador1@example.com', password: 'Mod456@' },
-          { nombre: 'Administrador', email: 'admin1@example.com', password: 'Admin789#' }
-        ];
-        localStorage.setItem('usuarios', JSON.stringify(this.usuarios));
-      }
-    }
-  }
+  private authService = inject(AuthService);
 
   onLogin() {
     this.mensaje = '';
@@ -58,24 +32,20 @@ export class LoginComponent {
       return;
     }
 
-    const usuario = this.usuarios.find(
-      u => u.email === this.email && u.password === this.password
-    );
+    this.authService.login(this.email, this.password).subscribe({
+      next: (respuesta: Usuario) => {
+        this.mensaje = `Bienvenido, ${respuesta.nombreUsuario}!`;
+        this.exito = true;
 
-    if (!usuario) {
-      this.mensaje = 'Correo o contraseña incorrectos.';
-      return;
-    }
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('usuario', JSON.stringify(respuesta));
+        }
 
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('usuarioNombre', usuario.nombre);
-    }
-
-    this.mensaje = `Bienvenido, ${usuario.nombre}!`;
-    this.exito = true;
-
-    setTimeout(() => {
-      this.router.navigate(['/home']);
-    }, 1500);
+        setTimeout(() => this.router.navigate(['/home']), 1500);
+      },
+      error: (error) => {
+        this.mensaje = error?.error || 'Credenciales incorrectas.';
+      }
+    });
   }
 }

@@ -1,10 +1,10 @@
+// src/app/pages/login/login.component.ts
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { AuthService, Usuario } from '../../services/auth.service';
+import { AuthService, LoginResponse } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -33,18 +33,19 @@ export class LoginComponent {
     }
 
     this.authService.login(this.email, this.password).subscribe({
-      next: (respuesta: Usuario) => {
-        this.mensaje = `Bienvenido, ${respuesta.nombreUsuario}!`;
+      next: (respuesta: LoginResponse) => {
+        this.mensaje = `Bienvenido, ${respuesta.usuario.nombreUsuario}!`;
         this.exito = true;
 
         if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('usuario', JSON.stringify(respuesta));
+          localStorage.setItem('token', respuesta.token);
+          localStorage.setItem('usuario', JSON.stringify(respuesta.usuario));
         }
 
         setTimeout(() => this.router.navigate(['/home']), 1500);
       },
       error: (error) => {
-        this.mensaje = error?.error || 'Credenciales incorrectas.';
+        this.mensaje = error?.error?.error || 'Credenciales incorrectas.';
       }
     });
   }

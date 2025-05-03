@@ -1,10 +1,67 @@
-<div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center bg-dark bg-gradient">
-  <div class="home-card text-center p-4">
-    <h2 class="mb-3">Bienvenido al Foro de Videojuegos</h2>
-    <p class="text-muted">¡Hola {{ usuarioActual }}! Explora las publicaciones y conecta con otros gamers.</p>
-    <div class="d-grid gap-2 mt-4">
-      <a routerLink="/profile" class="btn btn-outline-light">Modificar mi perfil</a>
-      <button class="btn btn-outline-danger" (click)="cerrarSesion()">Cerrar sesión</button>
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Foro de Videojuegos</h2>
+
+  <!-- Filtros -->
+  <div class="d-flex flex-wrap justify-content-between mb-4">
+    <div class="mb-2">
+      <label class="form-label">Filtrar por Categoría:</label>
+      <select class="form-select" [(ngModel)]="categoriaSeleccionada" (change)="filtrarPorCategoria()">
+        <option value="">Todas</option>
+        <option *ngFor="let cat of categorias" [value]="cat.idCategoria">
+          {{ cat.nombreCategoria }}
+        </option>
+      </select>
     </div>
+
+    <div class="mb-2">
+      <label class="form-label">Buscar por título:</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="busqueda"
+        (input)="buscar()"
+        placeholder="Buscar publicaciones..."
+      />
+    </div>
+  </div>
+
+  <!-- Publicaciones -->
+  <div *ngIf="publicaciones.length === 0" class="text-center text-muted mt-4">
+    No hay publicaciones para mostrar.
+  </div>
+
+  <div *ngFor="let pub of publicaciones" class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">{{ pub.titulo }}</h5>
+      <p class="card-text text-muted">
+        <small>
+          {{ pub.fechaPublicacion | date:'medium' }} -
+          Categoría: {{ pub.categoria.nombreCategoria }}
+
+        </small>
+      </p>
+      <p class="card-text">{{ pub.contenido }}</p>
+
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <span class="badge bg-secondary">{{ pub.estado }}</span>
+
+        <!-- Acciones solo para moderador o admin -->
+        <div *ngIf="usuario.rolNombre === 'Moderador' || usuario.rolNombre === 'Administrador'" class="d-flex gap-2">
+          <button class="btn btn-sm btn-warning" (click)="banearPublicacion(pub.idPublicacion)">Banear</button>
+          <button
+            *ngIf="usuario.rolNombre === 'Administrador'"
+            class="btn btn-sm btn-danger"
+            (click)="eliminarPublicacion(pub.idPublicacion)">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enlaces -->
+  <div class="text-center mt-4">
+    <a routerLink="/profile" class="btn btn-outline-primary me-2">Modificar Perfil</a>
+    <button class="btn btn-outline-danger" (click)="cerrarSesion()">Cerrar Sesión</button>
   </div>
 </div>

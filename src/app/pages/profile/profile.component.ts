@@ -1,13 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-interface UsuarioSimulado {
-  email: string;
-  nombre: string;
-  password: string;
-}
+import { Router, RouterModule } from '@angular/router';
+import { AuthService, Usuario } from '../../services/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,55 +11,75 @@ interface UsuarioSimulado {
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   email: string = '';
-  nombre: string = '';
+  nombreUsuario: string = '';
   password: string = '';
-
   mensaje: string = '';
   exito: boolean = false;
+  idUsuario!: number;
+  rolId!: number;
+  rolNombre: string = '';
+
+  constructor(private router: Router, private authService: AuthService) {}
+
+  ngOnInit(): void {
+    const usuario: Usuario = JSON.parse(localStorage.getItem('usuario')!);
+    this.email = usuario.email;
+    this.nombreUsuario = usuario.nombreUsuario;
+    this.idUsuario = usuario.idUsuario;
+    this.rolId = usuario.rolId;
+    this.rolNombre = usuario.rolNombre;
+    this.email = usuario.email;
+    this.nombreUsuario = usuario.nombreUsuario;
+    this.idUsuario = usuario.idUsuario;
+    this.rolId = usuario.rolId;
+    this.rolNombre = usuario.rolNombre;
+  }
 
   modificarPerfil() {
     this.mensaje = '';
     this.exito = false;
 
-    if (!this.email || !this.nombre || !this.password) {
-      this.mensaje = '❌ Todos los campos son obligatorios.';
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.email)) {
-      this.mensaje = '❌ El correo electrónico no tiene un formato válido.';
+    if (!this.password) {
+      this.mensaje = '❌ La contraseña es obligatoria.';
       return;
     }
 
     if (!this.validarPassword(this.password)) {
-      this.mensaje = '❌ La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un carácter especial.';
+      this.mensaje = '❌ La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.';
       return;
     }
 
-    const usuarios: UsuarioSimulado[] = JSON.parse(localStorage.getItem('usuarios') || '[]');
-    const index = usuarios.findIndex(u => u.email === this.email.trim());
+    const datosActualizados = {
+      idUsuario: this.idUsuario,
+      nombreUsuario: this.nombreUsuario,
+      email: this.email,                 
+      contraseña: this.password,
+      rol: { idRol: this.rolId }       
+    };
 
-    if (index === -1) {
-      this.mensaje = '❌ El correo ingresado no está registrado.';
-      return;
-    }
-
-    // Actualizar datos
-    usuarios[index].nombre = this.nombre;
-    usuarios[index].password = this.password;
-
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    localStorage.setItem('usuarioNombre', this.nombre);
-
-    this.mensaje = `✅ Perfil actualizado correctamente para ${this.email}.`;
-    this.exito = true;
+    this.authService.actualizarUsuario(this.idUsuario, datosActualizados).subscribe({
+      next: (actualizado) => {
+        localStorage.setItem('usuario', JSON.stringify(actualizado));
+        this.mensaje = '✅ Contraseña actualizada correctamente.';
+        this.exito = true;
+        setTimeout(() => this.router.navigate(['/home']), 3000);
+      },
+      error: () => {
+        this.mensaje = '❌ Error al actualizar el perfil.';
+      }
+    });
   }
 
   validarPassword(password: string): boolean {
     const regex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).{8,}$/;
     return regex.test(password);
   }
+
+  cerrarSesion() {
+    localStorage.removeItem('usuario');
+    this.router.navigate(['/login']);
+  }
+  
 }

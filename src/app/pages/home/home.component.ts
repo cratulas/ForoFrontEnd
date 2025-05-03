@@ -1,9 +1,9 @@
-// src/app/pages/home/home.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ForoService, Publicacion, Categoria, Comentario } from '../../services/foro.service';
+import { ControlService } from '../../services/control.service';
 
 @Component({
   selector: 'app-home',
@@ -27,7 +27,11 @@ export class HomeComponent implements OnInit {
     idCategoria: ''
   };
 
-  constructor(private foroService: ForoService, private router: Router) {}
+  constructor(
+    private foroService: ForoService,
+    private controlService: ControlService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -48,7 +52,7 @@ export class HomeComponent implements OnInit {
   }
 
   cargarPublicaciones(): void {
-    const estado = this.usuario.rolNombre === 'Administrador' || this.usuario.rolNombre === 'Moderador' ? '' : 'activo';
+    const estado = this.esModerador() || this.esAdmin() ? '' : 'activo';
 
     this.foroService.getPublicaciones(estado).subscribe(publicaciones => {
       this.publicaciones = publicaciones;
@@ -57,7 +61,7 @@ export class HomeComponent implements OnInit {
   }
 
   cargarComentarios(id: number): void {
-    const estado = this.usuario.rolNombre === 'Administrador' || this.usuario.rolNombre === 'Moderador' ? '' : 'activo';
+    const estado = this.esModerador() || this.esAdmin() ? '' : 'activo';
     this.foroService.getComentariosPorPublicacion(id, estado).subscribe(coms => {
       this.comentarios[id] = coms;
     });
@@ -73,31 +77,54 @@ export class HomeComponent implements OnInit {
       });
     }
   }
+  
 
   filtrarPorCategoria(): void {
     if (!this.categoriaSeleccionada) {
       this.cargarPublicaciones();
       return;
     }
-
+  
     this.foroService.getPublicaciones().subscribe(publicaciones => {
       this.publicaciones = publicaciones.filter(
-        pub => pub.categoria && pub.categoria.idCategoria == +this.categoriaSeleccionada
+        pub => pub.estado === 'activo' && pub.categoria && pub.categoria.idCategoria == +this.categoriaSeleccionada
       );
       this.publicaciones.forEach(pub => this.cargarComentarios(pub.idPublicacion));
     });
   }
+  
+  
 
-  banearPublicacion(id: number): void {
-    this.foroService.banearPublicacion(id).subscribe(() => {
-      alert('Publicación baneada');
+  toggleBanearPublicacion(pub: Publicacion): void {
+    const nuevoEstado = pub.estado === 'baneada' ? 'activo' : 'baneada';
+  
+    this.controlService.toggleBanearPublicacion(pub.idPublicacion, pub.estado).subscribe(() => {
+      alert(pub.estado === 'baneada' ? 'Publicación desbaneada' : 'Publicación baneada');
+      pub.estado = nuevoEstado;
+    });
+  }
+  
+
+  eliminarPublicacion(id: number): void {
+    this.controlService.eliminarPublicacion(id).subscribe(() => {
+      alert('Publicación eliminada');
       this.cargarPublicaciones();
     });
   }
 
-  eliminarPublicacion(id: number): void {
-    this.foroService.eliminarPublicacion(id).subscribe(() => {
-      alert('Publicación eliminada');
+  toggleBanearComentario(com: Comentario): void {
+    const nuevoEstado = com.estado === 'baneada' ? 'activo' : 'baneada';
+  
+    this.controlService.toggleBanearComentario(com.idComentario, com.estado).subscribe(() => {
+      alert(com.estado === 'baneada' ? 'Comentario desbaneado' : 'Comentario baneado');
+      com.estado = nuevoEstado; 
+    });
+  }
+  
+
+  eliminarComentario(id: number): void {
+    this.controlService.eliminarComentario(id).subscribe(() => {
+      alert('Comentario eliminado');
       this.cargarPublicaciones();
     });
   }
@@ -107,9 +134,8 @@ export class HomeComponent implements OnInit {
       titulo: this.nuevaPublicacion.titulo,
       contenido: this.nuevaPublicacion.contenido,
       idUsuario: this.usuario.idUsuario,
-      categoria: { idCategoria: +this.nuevaPublicacion.idCategoria } 
+      categoria: { idCategoria: +this.nuevaPublicacion.idCategoria }
     };
-    
 
     this.foroService.crearPublicacion(nueva).subscribe(() => {
       alert('Publicación creada');
@@ -125,9 +151,8 @@ export class HomeComponent implements OnInit {
     const nuevo = {
       contenido,
       idUsuario: this.usuario.idUsuario,
-      publicacion: { idPublicacion }  
+      publicacion: { idPublicacion }
     };
-    
 
     this.foroService.crearComentario(nuevo).subscribe(() => {
       this.nuevoComentario[idPublicacion] = '';
@@ -138,5 +163,13 @@ export class HomeComponent implements OnInit {
   cerrarSesion(): void {
     localStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  esModerador(): boolean {
+    return this.usuario.rolNombre === 'Maestro del foro';
+  }
+
+  esAdmin(): boolean {
+    return this.usuario.rolNombre === 'Game Master';
   }
 }

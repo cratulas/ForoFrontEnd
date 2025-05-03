@@ -80,4 +80,24 @@ export class ForoService {
   eliminarComentario(id: number): Observable<any> {
     return this.http.delete(`${this.controlComentariosUrl}/${id}`);
   }
+
+  crearPublicacion(pub: {
+    titulo: string;
+    contenido: string;
+    idUsuario: number;
+    categoria: { idCategoria: number };
+  }): Observable<any> {
+    return this.http.post(this.publicacionesUrl, pub);
+  }
+  
+  
+  crearComentario(com: {
+    contenido: string;
+    idUsuario: number;
+    publicacion: { idPublicacion: number };
+  }): Observable<any> {
+    return this.http.post(this.comentariosUrl, com);
+  }
+  
+  
 }

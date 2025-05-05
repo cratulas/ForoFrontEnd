@@ -73,7 +73,7 @@ export class ProfileComponent implements OnInit {
   }
 
   validarPassword(password: string): boolean {
-    const regex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).{8,}$/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).{8,}$/;
     return regex.test(password);
   }
 

@@ -46,7 +46,6 @@ export class RegisterComponent {
       return;
     }
 
-    // Llamar al backend para registrar el usuario
     this.authService.register({
       nombreUsuario: this.nombreUsuario,
       email: this.email,

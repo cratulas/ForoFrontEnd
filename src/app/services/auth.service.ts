@@ -20,7 +20,7 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = environment.apiUsuarios;
+  private readonly baseUrl = environment.apiUsuarios;
 
   constructor(private http: HttpClient) {}
 

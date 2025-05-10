@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ControlService {
-  private publicacionesUrl = 'http://localhost:8083/control/publicaciones';
-  private comentariosUrl = 'http://localhost:8083/control/comentarios';
+  private publicacionesUrl = `${environment.apiControl}/publicaciones`;
+  private comentariosUrl = `${environment.apiControl}/comentarios`;
+
+
 
   constructor(private http: HttpClient) {}
 

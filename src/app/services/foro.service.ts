@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../environments/environment';
 // Interfaces
 export interface Publicacion {
   idPublicacion: number;
@@ -33,12 +33,12 @@ export interface Categoria {
 
 @Injectable({ providedIn: 'root' })
 export class ForoService {
-  private publicacionesUrl = 'http://localhost:8082/publicaciones';
-  private comentariosUrl = 'http://localhost:8082/comentarios';
-  private categoriasUrl = 'http://localhost:8082/categorias';
+  private publicacionesUrl = `${environment.apiPublicaciones}/publicaciones`;
+  private comentariosUrl = `${environment.apiPublicaciones}/comentarios`;
+  private categoriasUrl = `${environment.apiPublicaciones}/categorias`;
 
-  private controlPublicacionesUrl = 'http://localhost:8083/control/publicaciones';
-  private controlComentariosUrl = 'http://localhost:8083/control/comentarios';
+  private controlPublicacionesUrl = `${environment.apiControl}/publicaciones`;
+  private controlComentariosUrl = `${environment.apiControl}/comentarios`;
 
   constructor(private http: HttpClient) {}
 

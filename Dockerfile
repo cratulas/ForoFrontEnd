@@ -1,26 +1,33 @@
-# Etapa 1: Compilar Angular con SSR
-FROM node:22-alpine AS build
+# Stage 1: Build the app
+FROM node:22.14.0-alpine AS builder
 
 WORKDIR /app
 
-# Copiar archivos del proyecto
-COPY package*.json ./
-RUN npm install
+# 1) Copia package.json y package-lock.json e instala dependencias
+COPY package.json package-lock.json ./
+RUN npm ci
 
+# 2) Copia el resto del código y lanza el build (produce /app/dist/front-end-web/{browser,server})
 COPY . .
-
-# Compilar el proyecto Angular (SSR incluido)
 RUN npm run build
 
-# Etapa 2: Servir con Node.js usando el servidor SSR generado
-FROM node:22-alpine
+# Stage 2: Prepare the runtime image
+FROM node:22.14.0-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=build /app/dist/front-end-web /app/dist/front-end-web
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/package.json /app/package.json
+# 3) Copia solo los artefactos de producción y el package.json
+COPY --from=builder /app/dist/front-end-web /app/dist/front-end-web
+COPY --from=builder /app/package.json /app/
+COPY --from=builder /app/package-lock.json /app/
 
-EXPOSE 8080
+# 4) Instala únicamente las dependencias de producción
+RUN npm ci --omit=dev
 
+# 5) Variables de entorno y puerto
+ENV NODE_ENV=production
+ENV PORT=4000
+EXPOSE 4000
+
+# 6) Comando por defecto: arranca el servidor SSR
 CMD ["node", "dist/front-end-web/server/server.mjs"]

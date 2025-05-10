@@ -2,6 +2,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+
 
 export interface Usuario {
   idUsuario: number;
@@ -18,7 +20,7 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://localhost:8081/usuarios';
+  private baseUrl = environment.apiUsuarios;
 
   constructor(private http: HttpClient) {}
 
